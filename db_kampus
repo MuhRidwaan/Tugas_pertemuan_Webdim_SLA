@@ -1,0 +1,39 @@
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Server version:               5.7.39 - MySQL Community Server (GPL)
+-- Server OS:                    Win64
+-- HeidiSQL Version:             12.13.0.7147
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+-- Dumping structure for table db_kampus.mahasiswa
+CREATE TABLE IF NOT EXISTS `mahasiswa` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nim` varchar(20) NOT NULL,
+  `nama` varchar(100) NOT NULL,
+  `prodi` varchar(100) NOT NULL,
+  `angkatan` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nim` (`nim`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Dumping data for table db_kampus.mahasiswa: ~3 rows (approximately)
+INSERT INTO `mahasiswa` (`id`, `nim`, `nama`, `prodi`, `angkatan`, `created_at`) VALUES
+	(2, '2201002', 'Siti Aminah', 'Teknik informatika', 2022, '2026-06-13 03:16:44'),
+	(3, '0112523022', 'M Ridwan', 'Informatika', 2023, '2026-06-20 14:30:51'),
+	(4, '0112523023', 'M Amin', 'Teknik Informatika', 2023, '2026-06-20 14:36:17');
+
+/*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
