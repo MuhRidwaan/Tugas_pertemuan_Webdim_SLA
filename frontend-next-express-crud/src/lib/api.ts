@@ -15,7 +15,7 @@ export type Mahasiswa = {
 export type MahasiswaInput = {
   nim: string;
   nama: string;
-  prodi_id: string; // di form biasanya bertipe string sebelum disubmit
+  prodi_id: string;
   angkatan: number;
 };
 
@@ -38,7 +38,6 @@ export async function getMahasiswa(params?: {
   const result = await response.json();
 
   if (!response.ok) throw new Error(result.message);
-  // Backend lo mengembalikan { data: rows }, jadi kita ambil result.data
   return result.data || [];
 }
 
@@ -46,7 +45,7 @@ export async function getMahasiswa(params?: {
 export async function createMahasiswa(formData: FormData): Promise<void> {
   const response = await fetch(`${API_URL}/mahasiswa`, {
     method: "POST",
-    body: formData, // Jangan pasang Content-Type Header kalau pake FormData, biarkan otomatis
+    body: formData,
   });
 
   const result = await response.json();
@@ -54,7 +53,10 @@ export async function createMahasiswa(formData: FormData): Promise<void> {
 }
 
 // Tambahkan updateMahasiswa yang menerima FormData
-export async function updateMahasiswa(id: number, formData: FormData): Promise<void> {
+export async function updateMahasiswa(
+  id: number,
+  formData: FormData,
+): Promise<void> {
   const response = await fetch(`${API_URL}/mahasiswa/${id}`, {
     method: "PUT",
     body: formData,
@@ -72,4 +74,16 @@ export async function deleteMahasiswa(id: number): Promise<void> {
 
   const result = await response.json();
   if (!response.ok) throw new Error(result.message);
+}
+
+export type Prodi = {
+  id: number;
+  nama_prodi: string;
+};
+
+export async function getProdi(): Promise<Prodi[]> {
+  const response = await fetch(`${API_URL}/prodi`, { cache: "no-store" });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message);
+  return result.data || [];
 }

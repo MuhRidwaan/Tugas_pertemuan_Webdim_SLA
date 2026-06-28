@@ -8,12 +8,15 @@ import {
   createMahasiswa,
   deleteMahasiswa,
   getMahasiswa,
+  getProdi,
   Mahasiswa,
-  updateMahasiswa, // MahasiswaInput dihapus dari import karena pake FormData
+  Prodi,
+  updateMahasiswa,
 } from "@/lib/api";
 
 export default function MahasiswaPage() {
   const [mahasiswa, setMahasiswa] = useState<Mahasiswa[]>([]);
+  const [prodiList, setProdiList] = useState<Prodi[]>([]);
   const [selectedMahasiswa, setSelectedMahasiswa] = useState<Mahasiswa | null>(
     null,
   );
@@ -21,43 +24,55 @@ export default function MahasiswaPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  const loadMahasiswa = async () => {
+  // State untuk Search, Filter, & Pagination
+  const [search, setSearch] = useState("");
+  const [prodiId, setProdiId] = useState("");
+  const [page, setPage] = useState(1);
+
+  const loadData = async () => {
     try {
       setLoading(true);
       setError("");
-      const data = await getMahasiswa();
-      setMahasiswa(data);
+
+      // Ambil data mahasiswa dengan query params
+      const dataMhs = await getMahasiswa({
+        search,
+        prodi_id: prodiId,
+        page,
+        limit: 5,
+      });
+      setMahasiswa(dataMhs);
+
+      // Ambil data prodi untuk dropdown
+      const dataProdi = await getProdi();
+      setProdiList(dataProdi);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Gagal mengambil data mahasiswa",
-      );
+      setError(err instanceof Error ? err.message : "Gagal memuat data");
     } finally {
       setLoading(false);
     }
   };
 
+  // Efek memicu reload data saat search, filter prodi, atau halaman bergeser
   useEffect(() => {
-    loadMahasiswa();
-  }, []);
+    loadData();
+  }, [search, prodiId, page]);
 
-  // SINKRONISASI: Ubah type dari MahasiswaInput menjadi FormData
   const handleSubmit = async (formData: FormData) => {
     try {
       setMessage("");
       setError("");
 
       if (selectedMahasiswa) {
-        // Kirim ID dan formData ke fungsi update
         await updateMahasiswa(selectedMahasiswa.id, formData);
         setMessage("Data mahasiswa berhasil diperbarui");
       } else {
-        // Kirim formData ke fungsi create
         await createMahasiswa(formData);
         setMessage("Data mahasiswa berhasil ditambahkan");
       }
 
       setSelectedMahasiswa(null);
-      await loadMahasiswa(); // Reload data tabel setelah berhasil
+      await loadData();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal menyimpan data");
     }
@@ -72,7 +87,7 @@ export default function MahasiswaPage() {
       setError("");
       await deleteMahasiswa(id);
       setMessage("Data mahasiswa berhasil dihapus");
-      await loadMahasiswa();
+      await loadData();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal menghapus data");
     }
@@ -85,7 +100,6 @@ export default function MahasiswaPage() {
           <h1>CRUD Data Mahasiswa</h1>
           <p>Frontend Next.js yang terhubung ke backend Express.js.</p>
         </div>
-
         <Link href="/">
           <button className="btn-secondary">Kembali</button>
         </Link>
@@ -96,20 +110,75 @@ export default function MahasiswaPage() {
 
       <MahasiswaForm
         selectedMahasiswa={selectedMahasiswa}
+        prodiList={prodiList}
         onSubmit={handleSubmit}
         onCancelEdit={() => setSelectedMahasiswa(null)}
       />
 
       <section className="card" style={{ marginTop: 20 }}>
         <h2>Daftar Mahasiswa</h2>
+
+        {/* BAR DATA FILTER & SEARCH */}
+        <div className="grid" style={{ marginBottom: 15, gap: "10px" }}>
+          <input
+            type="text"
+            placeholder="Cari NIM atau Nama..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+          />
+          <select
+            value={prodiId}
+            onChange={(e) => {
+              setProdiId(e.target.value);
+              setPage(1);
+            }}
+          >
+            <option value="">-- Semua Prodi --</option>
+            {prodiList.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.nama_prodi}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {loading ? (
           <p>Memuat data...</p>
         ) : (
-          <MahasiswaTable
-            mahasiswa={mahasiswa}
-            onEdit={setSelectedMahasiswa}
-            onDelete={handleDelete}
-          />
+          <>
+            <MahasiswaTable
+              mahasiswa={mahasiswa}
+              onEdit={setSelectedMahasiswa}
+              onDelete={handleDelete}
+            />
+
+            {/* INTEGRASI PAGINATION */}
+            <div
+              className="actions"
+              style={{ marginTop: 15, justifyContent: "center" }}
+            >
+              <button
+                disabled={page === 1}
+                onClick={() => setPage((p) => p - 1)}
+                className="btn-secondary"
+              >
+                Prev
+              </button>
+              <span style={{ alignSelf: "center", margin: "0 10px" }}>
+                Halaman {page}
+              </span>
+              <button
+                disabled={mahasiswa.length < 5}
+                onClick={() => setPage((p) => p + 1)}
+                className="btn-secondary"
+              >
+                Next
+              </button>
+            </div>
+          </>
         )}
       </section>
     </main>

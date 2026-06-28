@@ -8,7 +8,7 @@ export const getAllMahasiswa = async (req: Request, res: Response) => {
     const search = String(req.query.search || "");
     const prodiId = req.query.prodi_id ? Number(req.query.prodi_id) : null;
     const page = Math.max(Number(req.query.page) || 1, 1);
-    const limit = Math.max(Number(req.query.limit) || 10, 1);
+    const limit = Math.max(Number(req.query.limit) || 5, 1);
     const offset = (page - 1) * limit;
 
     let where = "WHERE 1=1";
