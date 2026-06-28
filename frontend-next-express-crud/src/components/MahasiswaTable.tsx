@@ -32,14 +32,13 @@ export default function MahasiswaTable({ mahasiswa, onEdit, onDelete }: Props) {
             <td>{index + 1}</td>
             <td>{item.nim}</td>
             <td>{item.nama}</td>
-            <td>{item.prodi}</td>
+            <td>{item.nama_prodi}</td> 
             <td>{item.angkatan}</td>
             <td>
               <div className="actions">
                 <button className="btn-secondary" onClick={() => onEdit(item)}>
                   Edit
                 </button>
-
                 <button
                   className="btn-danger"
                   onClick={() => onDelete(item.id)}

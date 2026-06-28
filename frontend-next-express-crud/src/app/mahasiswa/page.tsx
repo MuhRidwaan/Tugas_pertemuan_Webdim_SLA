@@ -9,8 +9,7 @@ import {
   deleteMahasiswa,
   getMahasiswa,
   Mahasiswa,
-  MahasiswaInput,
-  updateMahasiswa,
+  updateMahasiswa, // MahasiswaInput dihapus dari import karena pake FormData
 } from "@/lib/api";
 
 export default function MahasiswaPage() {
@@ -41,21 +40,24 @@ export default function MahasiswaPage() {
     loadMahasiswa();
   }, []);
 
-  const handleSubmit = async (payload: MahasiswaInput) => {
+  // SINKRONISASI: Ubah type dari MahasiswaInput menjadi FormData
+  const handleSubmit = async (formData: FormData) => {
     try {
       setMessage("");
       setError("");
 
       if (selectedMahasiswa) {
-        await updateMahasiswa(selectedMahasiswa.id, payload);
+        // Kirim ID dan formData ke fungsi update
+        await updateMahasiswa(selectedMahasiswa.id, formData);
         setMessage("Data mahasiswa berhasil diperbarui");
       } else {
-        await createMahasiswa(payload);
+        // Kirim formData ke fungsi create
+        await createMahasiswa(formData);
         setMessage("Data mahasiswa berhasil ditambahkan");
       }
 
       setSelectedMahasiswa(null);
-      await loadMahasiswa();
+      await loadMahasiswa(); // Reload data tabel setelah berhasil
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal menyimpan data");
     }

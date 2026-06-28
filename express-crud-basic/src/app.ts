@@ -1,7 +1,9 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
 // import mahasiswaRoutes from "./routes/mahasiswa.route";
 import mahasiswaDbRoutes from "./routes/mahasiswa-db.route";
+import prodiRoutes from "./routes/prodi.route";
 
 // app.use("/api/db/mahasiswa", mahasiswaDbRoutes);
 
@@ -22,5 +24,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/mahasiswa", mahasiswaDbRoutes);
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/api/prodi", prodiRoutes);
 
 export default app;
