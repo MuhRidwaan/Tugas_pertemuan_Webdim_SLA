@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const mahasiswa_controller_1 = require("../controllers/mahasiswa.controller");
+const upload_middleware_1 = require("../middlewares/upload.middleware");
+const router = (0, express_1.Router)();
+router.get("/", mahasiswa_controller_1.getAllMahasiswa);
+router.post("/", upload_middleware_1.uploadFotoMahasiswa.single("foto"), mahasiswa_controller_1.createMahasiswa);
+router.put("/:id", upload_middleware_1.uploadFotoMahasiswa.single("foto"), mahasiswa_controller_1.updateMahasiswa);
+router.delete("/:id", mahasiswa_controller_1.deleteMahasiswa);
+exports.default = router;

@@ -1,6 +1,14 @@
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
 
+function getAuthHeaders() {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+  return {};
+}
+
 export type Mahasiswa = {
   id: number;
   nim: string;
@@ -34,6 +42,7 @@ export async function getMahasiswa(params?: {
 
   const response = await fetch(`${API_URL}/mahasiswa?${query.toString()}`, {
     cache: "no-store",
+    headers: { ...getAuthHeaders() },
   });
   const result = await response.json();
 
@@ -45,6 +54,7 @@ export async function getMahasiswa(params?: {
 export async function createMahasiswa(formData: FormData): Promise<void> {
   const response = await fetch(`${API_URL}/mahasiswa`, {
     method: "POST",
+    headers: { ...getAuthHeaders() },
     body: formData,
   });
 
@@ -59,6 +69,7 @@ export async function updateMahasiswa(
 ): Promise<void> {
   const response = await fetch(`${API_URL}/mahasiswa/${id}`, {
     method: "PUT",
+    headers: { ...getAuthHeaders() },
     body: formData,
   });
 
@@ -70,6 +81,7 @@ export async function updateMahasiswa(
 export async function deleteMahasiswa(id: number): Promise<void> {
   const response = await fetch(`${API_URL}/mahasiswa/${id}`, {
     method: "DELETE",
+    headers: { ...getAuthHeaders() },
   });
 
   const result = await response.json();

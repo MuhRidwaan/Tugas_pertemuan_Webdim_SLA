@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import MahasiswaForm from "@/components/MahasiswaForm";
 import MahasiswaTable from "@/components/MahasiswaTable";
 import {
@@ -15,6 +16,7 @@ import {
 } from "@/lib/api";
 
 export default function MahasiswaPage() {
+  const router = useRouter();
   const [mahasiswa, setMahasiswa] = useState<Mahasiswa[]>([]);
   const [prodiList, setProdiList] = useState<Prodi[]>([]);
   const [selectedMahasiswa, setSelectedMahasiswa] = useState<Mahasiswa | null>(
@@ -55,8 +57,13 @@ export default function MahasiswaPage() {
 
   // Efek memicu reload data saat search, filter prodi, atau halaman bergeser
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
     loadData();
-  }, [search, prodiId, page]);
+  }, [search, prodiId, page, router]);
 
   const handleSubmit = async (formData: FormData) => {
     try {
@@ -100,9 +107,22 @@ export default function MahasiswaPage() {
           <h1>CRUD Data Mahasiswa</h1>
           <p>Frontend Next.js yang terhubung ke backend Express.js.</p>
         </div>
-        <Link href="/">
-          <button className="btn-secondary">Kembali</button>
-        </Link>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <Link href="/">
+            <button className="btn-secondary">Kembali</button>
+          </Link>
+          <button 
+            className="btn-primary" 
+            style={{ backgroundColor: "#ef4444" }} 
+            onClick={() => {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              window.location.href = "/login";
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       {message && <div className="message">{message}</div>}
