@@ -14,6 +14,7 @@ import {
   Prodi,
   updateMahasiswa,
 } from "@/lib/api";
+import { getUser } from "@/lib/auth";
 
 export default function MahasiswaPage() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function MahasiswaPage() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [userRole, setUserRole] = useState<string>("");
 
   // State untuk Search, Filter, & Pagination
   const [search, setSearch] = useState("");
@@ -62,8 +64,15 @@ export default function MahasiswaPage() {
       router.push("/login");
       return;
     }
+    const user = getUser();
+    if (user) setUserRole(user.role);
+    
     loadData();
   }, [search, prodiId, page, router]);
+
+  const canCreate = userRole === "admin" || userRole === "operator";
+  const canEdit = userRole === "admin" || userRole === "operator";
+  const canDelete = userRole === "admin";
 
   const handleSubmit = async (formData: FormData) => {
     try {
@@ -128,12 +137,14 @@ export default function MahasiswaPage() {
       {message && <div className="message">{message}</div>}
       {error && <div className="message error">{error}</div>}
 
-      <MahasiswaForm
-        selectedMahasiswa={selectedMahasiswa}
-        prodiList={prodiList}
-        onSubmit={handleSubmit}
-        onCancelEdit={() => setSelectedMahasiswa(null)}
-      />
+      {canCreate && (
+        <MahasiswaForm
+          selectedMahasiswa={selectedMahasiswa}
+          prodiList={prodiList}
+          onSubmit={handleSubmit}
+          onCancelEdit={() => setSelectedMahasiswa(null)}
+        />
+      )}
 
       <section className="card" style={{ marginTop: 20 }}>
         <h2>Daftar Mahasiswa</h2>
@@ -173,6 +184,8 @@ export default function MahasiswaPage() {
               mahasiswa={mahasiswa}
               onEdit={setSelectedMahasiswa}
               onDelete={handleDelete}
+              canEdit={canEdit}
+              canDelete={canDelete}
             />
 
             {/* INTEGRASI PAGINATION */}

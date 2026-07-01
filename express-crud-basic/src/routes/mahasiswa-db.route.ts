@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { allowRoles } from "../middlewares/role.middleware";
 import {
   getAllMahasiswa,
   createMahasiswa,
@@ -9,9 +10,19 @@ import { uploadFotoMahasiswa } from "../middlewares/upload.middleware";
 
 const router = Router();
 
-router.get("/", getAllMahasiswa);
-router.post("/", uploadFotoMahasiswa.single("foto"), createMahasiswa);
-router.put("/:id", uploadFotoMahasiswa.single("foto"), updateMahasiswa);
-router.delete("/:id", deleteMahasiswa);
+router.get("/", allowRoles("admin", "operator", "viewer"), getAllMahasiswa);
+router.post(
+  "/",
+  allowRoles("admin", "operator"),
+  uploadFotoMahasiswa.single("foto"),
+  createMahasiswa
+);
+router.put(
+  "/:id",
+  allowRoles("admin", "operator"),
+  uploadFotoMahasiswa.single("foto"),
+  updateMahasiswa
+);
+router.delete("/:id", allowRoles("admin"), deleteMahasiswa);
 
 export default router;
